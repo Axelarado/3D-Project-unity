@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterCpntroller : MonoBehaviour
+public class CharacterController : MonoBehaviour
 {
-    public float maxSpeed = 3.0f;
+    public float maxSpeed;
+    public float normalSpeed = 10.0f;
+    public float sprintSpeed = 20.0f;
     float rotation = 0.0f;
     float camRotation = 0.0f;
     public float rotationSpeed = 2.0f;
@@ -12,9 +14,10 @@ public class CharacterCpntroller : MonoBehaviour
     GameObject cam;
     Rigidbody myRigidbody;
 
-    bool isGround;
+    bool isOnGround;
     public GameObject groundChecker;
     public LayerMask groundLayer;
+    public float jumpForce = 400.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -26,11 +29,16 @@ public class CharacterCpntroller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        isOnGround = Physics.CheckSphere(groundChecker.transform.position, 0.1f, groundlayer);
+        isOnGround = Physics.CheckSphere(groundChecker.transform.position, 0.1f, groundLayer);
+        if (isOnGround == true && Input.GetKeyDown(KeyCode.Space))
+        {
+            myRigidbody.AddForce(transform.up * jumpForce);
+        }
 
-        Vector3 newVelocity = (transform.forward * Input.GetAxis("Vertical") * maxSpeed) + (transform.right * Input.GetAxis("Horizontal") *maxSpeed);
+
+        Vector3 newVelocity = (transform.forward * Input.GetAxis("Vertical") * maxSpeed) + (transform.right * Input.GetAxis("Horizontal") * maxSpeed);
         myRigidbody.velocity = new Vector3(newVelocity.x, myRigidbody.velocity.y, newVelocity.z);
-        
+
         rotation = rotation + Input.GetAxis("Mouse X") * rotationSpeed;
         transform.rotation = Quaternion.Euler(new Vector3(0.0f, rotation, 0.0f));
 
